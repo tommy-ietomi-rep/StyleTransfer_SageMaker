@@ -1,12 +1,18 @@
 """
-Neural Style Transfer training script for AWS SageMaker.
+Neural Style Transfer training script (runs locally).
 
 Applies the artistic style of a reference image to a content image using a
 pre-trained VGG19 network (features only) as the feature extractor.
 
-Input images are read from the SageMaker training channel
-(/opt/ml/input/data/training) and the stylized result (result.jpg) is
-saved to /opt/ml/model, which SageMaker uploads to S3 as the model artifact.
+Input images are read from a local data directory (default: ./data) and the
+stylized result (result.jpg) is saved to a local output directory
+(default: ./data).
+
+Usage:
+    python scripts/train.py \
+        --input_image_name mychild.jpg \
+        --reference_image_name illustration.jpg \
+        --epochs 500
 """
 
 import argparse
@@ -137,13 +143,10 @@ if __name__ == '__main__':
                         help='style image file name')
     parser.add_argument('--seed', type=int, default=1,
                         help='random seed (default: 1)')
-    parser.add_argument('--model-dir', type=str,
-                        default=os.environ.get('SM_MODEL_DIR', '/opt/ml/model'),
-                        help='directory to save the result (SageMaker: SM_MODEL_DIR)')
-    parser.add_argument('--data-dir', type=str,
-                        default=os.environ.get('SM_CHANNEL_TRAINING', './data'),
-                        help='directory containing the input images '
-                             '(SageMaker: SM_CHANNEL_TRAINING)')
+    parser.add_argument('--output-dir', type=str, default='./data',
+                        help='directory to save the result image (default: ./data)')
+    parser.add_argument('--data-dir', type=str, default='./data',
+                        help='directory containing the input images (default: ./data)')
     args = parser.parse_args()
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -180,8 +183,8 @@ if __name__ == '__main__':
           args.epochs, optimizer)
 
     # --- Save the result ----------------------------------------------------
-    os.makedirs(args.model_dir, exist_ok=True)
+    os.makedirs(args.output_dir, exist_ok=True)
     result = PIL.Image.fromarray(np.uint8(im_convert(target) * 255))
-    result_path = os.path.join(args.model_dir, 'result.jpg')
+    result_path = os.path.join(args.output_dir, 'result.jpg')
     result.save(result_path)
     print(f"Saved result image to {result_path}")
