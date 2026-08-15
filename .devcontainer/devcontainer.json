@@ -1,5 +1,5 @@
 {
-  "name": "My Project",
+  "name": "Tommy-House local project",
   "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
 
   "features": {
@@ -29,5 +29,9 @@
     "memory": "8gb",
     "storage": "32gb"
   },
+
+  "mounts": [
+    "source=${localEnv:HOME}/.ssh,target=/home/ieietommy/.ssh,type=bind,consistency=cached"
+  ],
 
 }
