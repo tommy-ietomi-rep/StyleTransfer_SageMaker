@@ -9,8 +9,11 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "dbaeumer.vscode-eslint",
-        "esbenp.prettier-vscode"
+        "ms-python.python",              // Python拡張機能
+        "ms-azuretools.vscode-docker",   // Docker管理
+        "mhutchie.git-graph",            // Git Graph
+        "eamodio.gitlens",               // GitLens
+        "cline.bot"
       ],
       "settings": {
         "github.copilot.enable": {
